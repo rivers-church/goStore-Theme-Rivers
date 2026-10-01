@@ -1,0 +1,46 @@
+{{/*
+  Rivers Church override of partials/product_grid.gohtml: products as the event
+  cards on the rivers.church home page — a bordered, rounded card with the picture
+  across the top and the details pinned to the bottom, ending in a small black
+  button.
+
+  Shared by the catalog and the index, so both pages get the same cards. The class
+  names the default stylesheet knows (.product-card, .frame, .title, .price, .badge)
+  are kept; .card-info and .card-button are this theme's additions.
+
+  The whole card is still the one link. The button is a <span> styled as a button
+  rather than a second <a>, because a link inside a link is invalid HTML and two
+  tab stops per product would double the keyboard path through the grid.
+*/}}
+{{define "product_grid"}}
+<ul class="products">
+  {{range $i, $p := .Products}}
+  <li>
+    <a class="product-card" href="/products/{{$p.Slug}}" hx-boost="true">
+      {{/* The first row loads eagerly, the rest lazily — as in the default. */}}
+      <span class="frame">
+        {{if $p.HasImage}}
+          <img src="{{image $p.ImageKey}}" alt="{{$p.Title}}" decoding="async"
+               {{if ge $i 4}}loading="lazy"{{end}}>
+        {{else}}
+          <img src="{{asset "placeholder.svg"}}" alt="" decoding="async"
+               {{if ge $i 4}}loading="lazy"{{end}}>
+        {{end}}
+      </span>
+      <span class="card-info">
+        <span class="title">{{$p.Title}}</span>
+        <span class="price">
+          {{if $p.OnePrice}}
+            {{$.Currency}} {{money $p.MinPriceCents}}
+          {{else}}
+            {{$.Currency}} {{money $p.MinPriceCents}} – {{money $p.MaxPriceCents}}
+          {{end}}
+        </span>
+        {{if not $p.InStock}}<span class="badge sold-out">Sold out</span>{{end}}
+        <span class="button small card-button" aria-hidden="true">View Product</span>
+      </span>
+    </a>
+  </li>
+  {{end}}
+</ul>
+{{end}}

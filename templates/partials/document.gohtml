@@ -1,0 +1,38 @@
+{{/*
+  Rivers Church override of partials/document.gohtml.
+
+  Copied from internal/handler/templates/partials/document.gohtml for one reason:
+  the favicons. Everything else is the default verbatim — in particular the
+  htmx-config meta tag, whose two settings are load-bearing (see the default file
+  for why). When upgrading gostore, diff this against the default and carry any
+  change across.
+
+  The icons are the same set rivers.church serves, kept in theme/static so they come
+  from this origin and need no CSP allowance.
+*/}}
+{{define "document_head"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} — {{.StoreName}}</title>
+<meta name="htmx-config" content='{"includeIndicatorStyles":false,
+  "responseHandling":[{"code":"204","swap":false},
+                      {"code":"[23]..","swap":true},
+                      {"code":"[45]..","swap":true,"error":true}]}'>
+{{/* The black R on a light tab bar, the white R on a dark one — as on rivers.church. */}}
+<link rel="icon" type="image/png" sizes="32x32" href="{{asset "favicon-32.png"}}" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="{{asset "favicon-32-white.png"}}" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="48x48" href="{{asset "favicon-48.png"}}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{asset "favicon-192.png"}}">
+<link rel="icon" type="image/png" sizes="512x512" href="{{asset "favicon-512.png"}}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{asset "apple-touch-icon.png"}}">
+<link rel="stylesheet" href="{{asset "styles.css"}}">
+{{/*
+  The Adobe Fonts kit (Helvetica Neue LT Pro), linked when FONT_CSS_URL is set.
+  See README.md in this theme for the two variables it needs.
+*/}}
+{{with .FontCSSURL}}<link rel="stylesheet" href="{{.}}">{{end}}
+<script src="{{asset "htmx.min.js"}}" defer></script>
+</head>
+{{end}}

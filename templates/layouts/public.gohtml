@@ -1,0 +1,85 @@
+{{/*
+  Rivers Church override of layouts/public.gohtml: the storefront chrome, laid out
+  like rivers.church — the RIVERS wordmark on the left of a white bar, plain black
+  category links, and the cart as the small black button where the site has "Give". The
+  footer mirrors the site's: link columns on whitesmoke, then a ruled line with the
+  copyright, the legal links and Instagram.
+
+  The two blocks the default layout offers are kept, so pages that fill them (the
+  catalog's nav_extra) keep working:
+
+    content    the page itself. Every page defines it.
+    nav_extra  an addition to the site nav. Empty by default.
+
+  Links back to the main site are absolute, because this store lives on its own
+  host.
+*/}}
+{{define "layout"}}
+{{template "document_head" .}}
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="/">
+      <img src="{{asset "rivers-logo.webp"}}" alt="{{.StoreName}}" width="124" height="24">
+    </a>
+    <nav>
+      {{/*
+        Category links, by slug: each needs a category with that slug in
+        /admin/categories. Until one exists the link shows an empty catalog.
+      */}}
+      <a href="/products?category=books">Books</a>
+      <a href="/products?category=conferences">Conferences</a>
+      <a class="button small" href="/cart">Cart</a>
+      {{block "nav_extra" .}}{{end}}
+    </nav>
+  </div>
+</header>
+<main>
+<div class="inner">
+{{block "content" .}}{{end}}
+</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div class="columns">
+      <nav aria-labelledby="footer-shop">
+        <h4 id="footer-shop">Shop</h4>
+        <a href="/products">All products</a>
+        <a href="/products?category=books">Books</a>
+        <a href="/products?category=conferences">Conferences</a>
+        <a href="/cart">Your cart</a>
+      </nav>
+      <nav aria-labelledby="footer-about">
+        <h4 id="footer-about">About</h4>
+        <a href="https://rivers.church/about/#values">Values</a>
+        <a href="https://rivers.church/about/#senior-pastors">Pastors</a>
+        <a href="https://rivers.church/locations">Locations</a>
+      </nav>
+      <nav aria-labelledby="footer-generosity">
+        <h4 id="footer-generosity">Generosity</h4>
+        <a href="https://rivers.church/give">Give</a>
+        <a href="https://www.riversfoundation.org.za">Rivers Foundation</a>
+      </nav>
+      <nav aria-labelledby="footer-more">
+        <h4 id="footer-more">More</h4>
+        <a href="https://rivers.church/#events">Events</a>
+        <a href="https://rivers.church/worship">Worship</a>
+        <a href="https://rivers.church/contact">Contact</a>
+      </nav>
+    </div>
+    <div class="legal">
+      <div class="row">
+        <span>Copyright © rivers.church.</span>
+        <a href="https://rivers.church/privacy-policy">Privacy Policy</a>
+        <span aria-hidden="true">|</span>
+        <a href="https://rivers.church/terms-of-use">Terms of Use</a>
+      </div>
+      <a class="social" href="https://instagram.com/riverschurch_">
+        <img src="{{asset "instagram.svg"}}" alt="Rivers Church on Instagram" width="20" height="20">
+      </a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
+{{end}}

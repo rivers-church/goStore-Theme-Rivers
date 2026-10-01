@@ -1,3 +1,54 @@
+# Rivers Church theme for gostore
+
+Makes the store look like [rivers.church](https://rivers.church): the RIVERS
+wordmark and R favicons, Helvetica Neue LT Pro from the church's Adobe Fonts kit,
+black / white / whitesmoke, the site's rounded black buttons, its footer, and
+product cards shaped like the home page's event cards.
+
+## What is overridden
+
+| File | Why |
+|---|---|
+| `static/styles.css` | The whole look. Copied from gostore's default and edited; the brand values are the `:root` block at the top |
+| `templates/partials/document.gohtml` | Favicons. Otherwise the default verbatim, htmx settings included |
+| `templates/layouts/public.gohtml` | Header (wordmark, nav, Cart button) and the rivers.church-style footer |
+| `templates/partials/product_grid.gohtml` | Event-style product cards, on both the index and the catalog |
+| `static/*.png`, `rivers-logo.webp`, `instagram.svg` | Brand assets, taken from rivers.church |
+
+The admin keeps gostore's own layout, so it gets the colours and buttons but not
+the wordmark.
+
+Each copied file stops receiving upstream fixes. When upgrading gostore, diff
+these against `internal/handler/templates/` and `internal/handler/static/styles.css`.
+
+## Product images
+
+Cards use one 16:9 frame, like the event cards, so a grid mixing books and
+conferences still lines up. Images are fitted inside it, never cropped: a 16:9
+conference thumbnail fills it, and a book cover shows whole with whitesmoke bars
+at the sides. For the cleanest cards, export every product image at 16:9 (a book
+cover on a 16:9 background). On the product page itself, an image keeps its own
+shape, capped at 80% of the screen height. `--card-ratio` in `styles.css` changes
+the card frame.
+
+## The font
+
+Helvetica Neue LT Pro is served by Adobe Fonts kit `voh5omd`, the same kit
+rivers.church uses. Adobe's licence does not allow self-hosting, so the server
+needs both of these (in gostore's `.env` for development, or the deployment's
+environment):
+
+```sh
+FONT_ORIGINS=https://use.typekit.net,https://p.typekit.net
+FONT_CSS_URL=https://use.typekit.net/voh5omd.css
+```
+
+Without them the stylesheet falls back to the system's Helvetica Neue / Helvetica /
+Arial. Adobe kits are locked to a list of domains, so add the store's production
+domain to the kit's web project in Adobe Fonts, or the font will not load there.
+
+---
+
 # theme/
 
 Your theme. The compose stack mounts this directory into the server and sets
