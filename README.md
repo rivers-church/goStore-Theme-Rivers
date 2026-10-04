@@ -11,7 +11,7 @@ product cards shaped like the home page's event cards.
 |---|---|
 | `static/styles.css` | The whole look. Copied from gostore's default and edited; the brand values are the `:root` block at the top |
 | `templates/partials/document.gohtml` | Favicons. Otherwise the default verbatim, htmx settings included |
-| `templates/layouts/public.gohtml` | Header (wordmark, nav, Cart button) and the rivers.church-style footer |
+| `templates/layouts/public.gohtml` | Header (wordmark, nav, Cart button, and gostore's account menu for a signed-in administrator) and the rivers.church-style footer |
 | `templates/partials/product_grid.gohtml` | Event-style product cards, on both the index and the catalog |
 | `static/*.png`, `rivers-logo.webp`, `instagram.svg` | Brand assets, taken from rivers.church |
 
@@ -20,6 +20,10 @@ the wordmark.
 
 Each copied file stops receiving upstream fixes. When upgrading gostore, diff
 these against `internal/handler/templates/` and `internal/handler/static/styles.css`.
+New features that need markup or styles in these files are the ones that break
+quietly: the account menu (the profile icon in the header) needed its
+`account-slot` placeholder in the layout and its "Your account in the header"
+block in `styles.css`, both copied in unchanged.
 
 ## Product images
 

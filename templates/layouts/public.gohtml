@@ -31,6 +31,14 @@
       <a href="/products?category=conferences">Conferences</a>
       <a class="button small" href="/cart">Cart</a>
       {{block "nav_extra" .}}{{end}}
+      {{/*
+        The account menu (Admin, Profile settings, Sign out), for a browser signed
+        in to the admin. Fetched rather than rendered, so the page is the same for
+        every visitor and stays cacheable; a visitor with no session gets an empty
+        204 and sees nothing. Keep this when re-copying the layout from gostore.
+      */}}
+      <span class="account-slot" hx-get="/admin/account/menu" hx-trigger="load"
+            hx-swap="outerHTML"></span>
     </nav>
   </div>
 </header>
