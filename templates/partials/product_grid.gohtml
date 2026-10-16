@@ -18,7 +18,14 @@
   <li>
     <a class="product-card" href="/products/{{$p.Slug}}" hx-boost="true">
       {{/* The first row loads eagerly, the rest lazily — as in the default. */}}
+      {{/*
+        .image-wrap is a 16:9 box with rounded corners, inside the frame. A 16:9
+        picture fills it and so gets the corners; a book cover is fitted inside
+        it, narrower than the box, and keeps its own square ones. A span rather
+        than a div, since it sits inside the .frame span.
+      */}}
       <span class="frame">
+        <span class="image-wrap">
         {{if $p.HasImage}}
           <img src="{{image $p.ImageKey}}" alt="{{$p.Title}}" decoding="async"
                {{if ge $i 4}}loading="lazy"{{end}}>
@@ -26,6 +33,7 @@
           <img src="{{asset "placeholder.svg"}}" alt="" decoding="async"
                {{if ge $i 4}}loading="lazy"{{end}}>
         {{end}}
+        </span>
       </span>
       <span class="card-info">
         <span class="title">{{$p.Title}}</span>

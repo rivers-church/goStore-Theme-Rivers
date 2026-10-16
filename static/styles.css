@@ -632,7 +632,12 @@ pre.raw {
   /* Every card keeps the same 16:9 frame, so a grid mixing books and conferences
      still lines up. The picture is fitted inside it rather than cropped, centred on
      white, and never taller than 90% of the frame — so a book cover gets a margin
-     above and below instead of touching the card's top edge. */
+     above and below instead of touching the card's top edge.
+
+     .image-wrap is the 90% box, at the card's own ratio and with the card's corner
+     radius. A 16:9 picture fills it exactly, so it is clipped to rounded corners
+     that echo the card's; a book cover is fitted inside it, narrower than the box,
+     never reaches those corners, and stays square. */
   .frame {
     aspect-ratio: var(--card-ratio);
     overflow: hidden;
@@ -640,10 +645,19 @@ pre.raw {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .image-wrap {
+    display: block;
+    height: 90%;
+    max-width: 100%;
+    aspect-ratio: var(--card-ratio);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
 
     > img {
       width: 100%;
-      height: 90%;
+      height: 100%;
       object-fit: contain;
       display: block;
       transition: transform 200ms ease-out;
@@ -676,7 +690,7 @@ pre.raw {
 
   /* The card is one link, so hovering anywhere on it shows the button's hover
      state, the same as hovering "Find Out More" on the site. */
-  &:hover .frame > img {
+  &:hover .image-wrap > img {
     transform: scale(1.03);
   }
 
