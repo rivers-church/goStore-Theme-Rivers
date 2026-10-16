@@ -28,10 +28,9 @@ block in `styles.css`, both copied in unchanged.
 ## Product images
 
 Cards use one 16:9 frame, like the event cards, so a grid mixing books and
-conferences still lines up. Images are fitted inside it, never cropped: a 16:9
-conference thumbnail fills it, and a book cover shows whole with whitesmoke bars
-at the sides. For the cleanest cards, export every product image at 16:9 (a book
-cover on a 16:9 background). On the product page itself, an image keeps its own
+conferences still lines up. Images are fitted inside it, never cropped, centred
+on white and at most 90% of the frame's height, so a book cover has a margin above
+and below and a 16:9 thumbnail a thin white border. On the product page itself, an image keeps its own
 shape, capped at 80% of the screen height. `--card-ratio` in `styles.css` changes
 the card frame.
 

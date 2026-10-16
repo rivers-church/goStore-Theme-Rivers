@@ -630,18 +630,20 @@ pre.raw {
   text-decoration: none;
 
   /* Every card keeps the same 16:9 frame, so a grid mixing books and conferences
-     still lines up. The picture is fitted inside it rather than cropped: a 16:9
-     thumbnail fills it exactly, and a book cover shows whole on whitesmoke rather
-     than losing the title off its top. For the cleanest cards, export images at
-     16:9 — a cover on a 16:9 background — so nothing needs the bars at all. */
+     still lines up. The picture is fitted inside it rather than cropped, centred on
+     white, and never taller than 90% of the frame — so a book cover gets a margin
+     above and below instead of touching the card's top edge. */
   .frame {
     aspect-ratio: var(--card-ratio);
     overflow: hidden;
-    background: var(--paper-sunk);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     > img {
       width: 100%;
-      height: 100%;
+      height: 90%;
       object-fit: contain;
       display: block;
       transition: transform 200ms ease-out;
