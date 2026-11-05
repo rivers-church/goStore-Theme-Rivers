@@ -1,0 +1,7 @@
+.git
+.env
+.kamal
+config
+backups
+README.md
+Makefile

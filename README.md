@@ -94,13 +94,25 @@ your own. See [Theming](../docs/theming.md).
 
 This repo also deploys the Rivers Church store (staging) to `work-docker01` with Kamal,
 behind the shared kamal-proxy and Cloudflare tunnel (`~/dev/riverschurch/infra/infra-01`).
-It builds nothing: it runs the published `ghcr.io/17xande-dev/gostore` image at the version
-pinned in the `Makefile`, with Postgres as a Kamal accessory.
+The `Dockerfile` bakes this theme into the published `ghcr.io/17xande-dev/gostore` release
+(version pinned there) and Kamal pushes the result to `ghcr.io/rivers-church/gostore`;
+Postgres is a Kamal accessory.
 
     cp .env.example .env     # fill in the secrets (gitignored)
-    make theme               # copy templates/ and static/ to the server
     kamal accessory boot postgres   # once
-    make deploy              # kamal deploy --skip-push --version=<pinned>
+    make deploy              # clean tree required; kamal deploy
     make backup              # pg_dump to ./backups
 
 Non-secret settings are in `config/deploy.yml`; secrets come from `.env` through `.kamal/secrets`.
+
+### Moving from compose (one-time cutover)
+
+The old stack (`docker compose` in `~/gostore`) and Kamal use the same Postgres data volume,
+`gostore_pgdata`, and must never run together:
+
+1. `make backup` (the old stack is still up, so this dumps its database).
+2. On the server: `cd ~/gostore && docker compose down` (also stops its own cloudflared tunnel;
+   volumes are kept).
+3. `kamal accessory boot postgres`, then `make deploy`; check `kamal app details`.
+4. In Cloudflare, add `stagingstore.rivers.church` to the `work-docker01` tunnel
+   (`http://kamal-proxy:80`) and delete the old `gostore` tunnel.

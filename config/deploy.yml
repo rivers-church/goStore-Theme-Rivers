@@ -1,12 +1,11 @@
 # Kamal deploy of the Rivers Church gostore (staging store) to the work Docker host next to
-# UniFi OS (work-docker01). Unlike the other apps this builds nothing: it deploys the
-# published gostore image (ghcr.io/17xande-dev/gostore) at a pinned version, plus Postgres
-# as a Kamal accessory. `make deploy` does it; `make theme` copies this repo's theme to the
-# server. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
+# UniFi OS (work-docker01). The image is the Dockerfile here: the published gostore release
+# (pinned there) with this theme baked in. Postgres is a Kamal accessory. `make deploy` does
+# it. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
 # ~/dev/riverschurch/infra/infra-01.
 service: gostore
 
-image: 17xande-dev/gostore
+image: rivers-church/gostore
 
 registry:
   server: ghcr.io
@@ -15,7 +14,7 @@ registry:
   password:
     - KAMAL_REGISTRY_PASSWORD
 
-# Required by Kamal even though nothing is built here.
+# The host is linux/amd64.
 builder:
   arch: amd64
 
@@ -59,7 +58,7 @@ env:
     DOWNLOAD_BUCKET: gostore-downloads
     EMAIL_FROM: store@rivers.church
     ORDER_NOTIFY_EMAIL: alexf@rivers.church
-    # The theme in this repo, mounted read-only below.
+    # The theme in this repo, baked into the image by the Dockerfile.
     TEMPLATE_DIR: /theme/templates
     STATIC_DIR: /theme/static
     # Adobe Fonts kit (see README "The font").
@@ -80,16 +79,15 @@ env:
     - PAYFAST_MERCHANT_KEY
     - PAYFAST_PASSPHRASE
 
-volumes:
-  # The theme lives on the server, copied by `make theme` (not in the image).
-  - "/home/it_admin/gostore/theme:/theme:ro"
-
-# Postgres 17, the version the existing data directory was made by. Kamal puts it on the
-# `kamal` network under the name gostore-postgres, which DATABASE_URL points at. It
-# publishes no port.
+# Postgres 17.11, the version the existing data directory was made by (pinned: upgrading
+# the major is a deliberate dump/restore). Kamal puts it on the `kamal` network under the
+# name gostore-postgres, which DATABASE_URL points at. It publishes no port. The data
+# volume is the one the old compose stack used (project gostore, volume pgdata), reused in
+# place: stop that stack first (see README "Moving from compose"); two Postgres servers
+# must never run on one data directory.
 accessories:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:17.11-alpine
     host: work-docker01
     env:
       clear:
@@ -98,6 +96,6 @@ accessories:
       secret:
         - POSTGRES_PASSWORD
     volumes:
-      - "gostore-pgdata:/var/lib/postgresql/data"
+      - "gostore_pgdata:/var/lib/postgresql/data"
     options:
       restart: unless-stopped
