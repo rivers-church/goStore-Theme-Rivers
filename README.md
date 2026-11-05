@@ -89,3 +89,18 @@ that page you took, and a later release that corrects it changes nothing for you
 Nothing in here is used unless `TEMPLATE_DIR` / `STATIC_DIR` point at it, so this
 directory is safe to leave empty, delete the contents of, or keep in a branch of
 your own. See [Theming](../docs/theming.md).
+
+## Deploying
+
+This repo also deploys the Rivers Church store (staging) to `work-docker01` with Kamal,
+behind the shared kamal-proxy and Cloudflare tunnel (`~/dev/riverschurch/infra/infra-01`).
+It builds nothing: it runs the published `ghcr.io/17xande-dev/gostore` image at the version
+pinned in the `Makefile`, with Postgres as a Kamal accessory.
+
+    cp .env.example .env     # fill in the secrets (gitignored)
+    make theme               # copy templates/ and static/ to the server
+    kamal accessory boot postgres   # once
+    make deploy              # kamal deploy --skip-push --version=<pinned>
+    make backup              # pg_dump to ./backups
+
+Non-secret settings are in `config/deploy.yml`; secrets come from `.env` through `.kamal/secrets`.

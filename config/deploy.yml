@@ -1,0 +1,103 @@
+# Kamal deploy of the Rivers Church gostore (staging store) to the work Docker host next to
+# UniFi OS (work-docker01). Unlike the other apps this builds nothing: it deploys the
+# published gostore image (ghcr.io/17xande-dev/gostore) at a pinned version, plus Postgres
+# as a Kamal accessory. `make deploy` does it; `make theme` copies this repo's theme to the
+# server. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
+# ~/dev/riverschurch/infra/infra-01.
+service: gostore
+
+image: 17xande-dev/gostore
+
+registry:
+  server: ghcr.io
+  username: 17xande
+  # Read from .kamal/secrets.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Required by Kamal even though nothing is built here.
+builder:
+  arch: amd64
+
+ssh:
+  user: it_admin
+
+servers:
+  web:
+    hosts:
+      - work-docker01
+
+# Cloudflare terminates TLS and the shared tunnel forwards the hostname to
+# http://kamal-proxy:80, so kamal-proxy serves plain http and asks for no cert.
+# /healthz also checks the database.
+proxy:
+  ssl: false
+  host: stagingstore.rivers.church
+  app_port: 8080
+  healthcheck:
+    path: /healthz
+
+env:
+  clear:
+    STORE_NAME: Rivers Store
+    CURRENCY: ZAR
+    BASE_URL: https://stagingstore.rivers.church
+    # kamal-proxy publishes nothing on the host and the shared Cloudflare tunnel is the
+    # only way in, so CF-Connecting-IP is trustworthy. A setup with another route to the
+    # app must not set this.
+    CLIENT_IP_SOURCE: cloudflare
+    # Staging: PayFast's sandbox. Flip to "false" only for the live store.
+    PAYFAST_SANDBOX: "true"
+    BLOB_ENDPOINT: fd280b2b9e3d2ba7c05431f53fc98d10.r2.cloudflarestorage.com
+    BLOB_REGION: auto
+    BLOB_USE_TLS: "true"
+    BLOB_BUCKET: gostore-images
+    BLOB_PUBLIC_BASE_URL: https://pub-6828ff88d41843eea70d60317a8d06d5.r2.dev
+    DOWNLOAD_ENDPOINT: fd280b2b9e3d2ba7c05431f53fc98d10.r2.cloudflarestorage.com
+    DOWNLOAD_REGION: auto
+    DOWNLOAD_USE_TLS: "true"
+    DOWNLOAD_BUCKET: gostore-downloads
+    EMAIL_FROM: store@rivers.church
+    ORDER_NOTIFY_EMAIL: alexf@rivers.church
+    # The theme in this repo, mounted read-only below.
+    TEMPLATE_DIR: /theme/templates
+    STATIC_DIR: /theme/static
+    # Adobe Fonts kit (see README "The font").
+    FONT_ORIGINS: https://use.typekit.net,https://p.typekit.net
+    FONT_CSS_URL: https://use.typekit.net/voh5omd.css
+  # Values come from .kamal/secrets, which reads the gitignored local .env.
+  secret:
+    - DATABASE_URL
+    - EMAIL_QUEUE_KEY
+    - GRAPH_TENANT_ID
+    - GRAPH_CLIENT_ID
+    - GRAPH_CLIENT_SECRET
+    - BLOB_ACCESS_KEY_ID
+    - BLOB_SECRET_ACCESS_KEY
+    - DOWNLOAD_ACCESS_KEY_ID
+    - DOWNLOAD_SECRET_ACCESS_KEY
+    - PAYFAST_MERCHANT_ID
+    - PAYFAST_MERCHANT_KEY
+    - PAYFAST_PASSPHRASE
+
+volumes:
+  # The theme lives on the server, copied by `make theme` (not in the image).
+  - "/home/it_admin/gostore/theme:/theme:ro"
+
+# Postgres 17, the version the existing data directory was made by. Kamal puts it on the
+# `kamal` network under the name gostore-postgres, which DATABASE_URL points at. It
+# publishes no port.
+accessories:
+  postgres:
+    image: postgres:17-alpine
+    host: work-docker01
+    env:
+      clear:
+        POSTGRES_USER: gostore
+        POSTGRES_DB: gostore
+      secret:
+        - POSTGRES_PASSWORD
+    volumes:
+      - "gostore-pgdata:/var/lib/postgresql/data"
+    options:
+      restart: unless-stopped
