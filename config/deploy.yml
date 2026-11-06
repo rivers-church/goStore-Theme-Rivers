@@ -1,7 +1,7 @@
 # Kamal deploy of the Rivers Church gostore (staging store) to the work Docker host next to
-# UniFi OS (work-docker01). The image is the Dockerfile here: gostore built from its
-# repo at the commit pinned there, with this theme baked in. Postgres is a Kamal accessory. `make deploy` does
-# it. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
+# UniFi OS (work-docker01). The image is the Dockerfile here: the published gostore
+# release (pinned there) with this theme baked in. Postgres is a Kamal accessory.
+# `make deploy` does it. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
 # ~/dev/riverschurch/infra/infra-01.
 service: gostore
 

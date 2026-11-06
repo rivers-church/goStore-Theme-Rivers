@@ -4,8 +4,8 @@ KAMAL ?= kamal
 SERVER ?= it_admin@work-docker01
 
 GOSTORE_REPO ?= https://github.com/17xande-dev/gostore.git
-# The commit gostore is built at, read from the Dockerfile so local dev runs what deploys.
-GOSTORE_REF := $(shell sed -n 's/^ARG GOSTORE_REF=//p' Dockerfile)
+# The gostore release the image is built on, read from the Dockerfile so local dev runs what deploys.
+GOSTORE_REF := $(shell sed -n 's/^ARG GOSTORE_VERSION=//p' Dockerfile)
 GOSTORE_DIR ?= .gostore
 # gostore's own `make up` and friends, run in the checkout with this theme layered on.
 export THEME_DIR := $(CURDIR)
@@ -13,9 +13,9 @@ GOSTORE_MAKE = $(MAKE) -C $(GOSTORE_DIR) COMPOSE="docker compose -f compose.yaml
 
 .PHONY: deploy logs-prod backup gostore dev dev-logs dev-token dev-down
 
-## deploy: build the image (gostore at the pinned commit + this theme), push it, and swap it in on work-docker01
+## deploy: build the image (gostore at the pinned release + this theme), push it, and swap it in on work-docker01
 # Kamal builds from HEAD, not the working tree, so a dirty tree is refused: the image tag
-# is a commit sha and must name the theme that is inside it. The gostore commit is pinned
+# is a commit sha and must name the theme that is inside it. The gostore release is pinned
 # in the Dockerfile.
 deploy:
 	@git diff --quiet HEAD -- || { echo "deploy: tracked files have uncommitted changes; commit first so the tag names what runs" >&2; exit 1; }
@@ -33,7 +33,7 @@ backup:
 	  && gunzip -c "$$f.partial" | tail -n 20 | grep -q 'PostgreSQL database dump complete' \
 	  && mv "$$f.partial" "$$f" && echo "$$f" || { rm -f "$$f.partial"; echo "backup failed" >&2; exit 1; }
 
-## gostore: clone gostore into .gostore if it is not there, and check out the pinned commit
+## gostore: clone gostore into .gostore if it is not there, and check out the pinned release
 gostore:
 	@[ -d $(GOSTORE_DIR)/.git ] || git clone $(GOSTORE_REPO) $(GOSTORE_DIR)
 	@git -C $(GOSTORE_DIR) cat-file -e $(GOSTORE_REF)^{commit} 2>/dev/null || git -C $(GOSTORE_DIR) fetch origin
