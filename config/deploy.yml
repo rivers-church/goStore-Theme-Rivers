@@ -79,16 +79,14 @@ env:
     - PAYFAST_MERCHANT_KEY
     - PAYFAST_PASSPHRASE
 
-# Postgres 17.11, the version the existing data directory was made by and the last 17.x
-# (pinned: upgrading the major is a deliberate dump/restore, and gostore's own stack is on 18
-# now; the 18 image also moves its data to /var/lib/postgresql, so it is not a tag bump).
-# Kamal puts it on the `kamal` network under the name gostore-postgres, which DATABASE_URL points at. It publishes no port. The data
-# volume is the one the old compose stack used (project gostore, volume pgdata), reused in
-# place: stop that stack first (see README "Moving from compose"); two Postgres servers
-# must never run on one data directory.
+# Postgres 18.6 (pinned: upgrading the major is a deliberate dump/restore). Kamal puts it on
+# the `kamal` network under the name gostore-postgres, which DATABASE_URL points at. It
+# publishes no port. From 18 the image keeps its data under /var/lib/postgresql, so that is
+# the mount point. The volume is gostore_pgdata18: the 17 data lives on in gostore_pgdata (made
+# by the old compose stack) until it is deleted by hand, once nobody needs the way back.
 accessories:
   postgres:
-    image: postgres:17.11-alpine
+    image: postgres:18.6-alpine
     host: work-docker01
     env:
       clear:
@@ -97,6 +95,6 @@ accessories:
       secret:
         - POSTGRES_PASSWORD
     volumes:
-      - "gostore_pgdata:/var/lib/postgresql/data"
+      - "gostore_pgdata18:/var/lib/postgresql"
     options:
       restart: unless-stopped
