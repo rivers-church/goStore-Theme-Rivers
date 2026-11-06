@@ -1,0 +1,14 @@
+# Layered over gostore's own compose.yaml by `make dev` (see Makefile). This repo is the theme
+# itself (templates/ and static/ at its root), so those two are mounted into the server
+# in place of gostore's empty theme/. `!override` drops the base mount instead of merging.
+services:
+  server:
+    volumes: !override
+      - ./.local/images:/images
+      - ./.local/downloads:/downloads
+      - ${THEME_DIR:?run this through make dev}/templates:/theme/templates:ro
+      - ${THEME_DIR}/static:/theme/static:ro
+    environment:
+      # Adobe Fonts kit, as in config/deploy.yml (README "The font").
+      FONT_ORIGINS: https://use.typekit.net,https://p.typekit.net
+      FONT_CSS_URL: https://use.typekit.net/voh5omd.css

@@ -1,6 +1,6 @@
 # Kamal deploy of the Rivers Church gostore (staging store) to the work Docker host next to
-# UniFi OS (work-docker01). The image is the Dockerfile here: the published gostore release
-# (pinned there) with this theme baked in. Postgres is a Kamal accessory. `make deploy` does
+# UniFi OS (work-docker01). The image is the Dockerfile here: gostore built from its
+# repo at the commit pinned there, with this theme baked in. Postgres is a Kamal accessory. `make deploy` does
 # it. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
 # ~/dev/riverschurch/infra/infra-01.
 service: gostore
@@ -79,9 +79,10 @@ env:
     - PAYFAST_MERCHANT_KEY
     - PAYFAST_PASSPHRASE
 
-# Postgres 17.11, the version the existing data directory was made by (pinned: upgrading
-# the major is a deliberate dump/restore). Kamal puts it on the `kamal` network under the
-# name gostore-postgres, which DATABASE_URL points at. It publishes no port. The data
+# Postgres 17.11, the version the existing data directory was made by and the last 17.x
+# (pinned: upgrading the major is a deliberate dump/restore, and gostore's own stack is on 18
+# now; the 18 image also moves its data to /var/lib/postgresql, so it is not a tag bump).
+# Kamal puts it on the `kamal` network under the name gostore-postgres, which DATABASE_URL points at. It publishes no port. The data
 # volume is the one the old compose stack used (project gostore, volume pgdata), reused in
 # place: stop that stack first (see README "Moving from compose"); two Postgres servers
 # must never run on one data directory.

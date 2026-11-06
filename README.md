@@ -18,7 +18,7 @@ product cards shaped like the home page's event cards.
 The admin keeps gostore's own layout, so it gets the colours and buttons but not
 the wordmark.
 
-Each copied file stops receiving upstream fixes. When upgrading gostore, diff
+Each copied file stops receiving upstream fixes. When upgrading gostore (bump `GOSTORE_REF` in the `Dockerfile`), diff
 these against `internal/handler/templates/` and `internal/handler/static/styles.css`.
 New features that need markup or styles in these files are the ones that break
 quietly: the account menu (the profile icon in the header) needed its
@@ -38,8 +38,8 @@ the card frame.
 
 Helvetica Neue LT Pro is served by Adobe Fonts kit `voh5omd`, the same kit
 rivers.church uses. Adobe's licence does not allow self-hosting, so the server
-needs both of these (in gostore's `.env` for development, or the deployment's
-environment):
+needs both of these (`make dev` sets them for local development; the deployment's
+environment sets them in `config/deploy.yml`):
 
 ```sh
 FONT_ORIGINS=https://use.typekit.net,https://p.typekit.net
@@ -93,10 +93,13 @@ your own. See [Theming](../docs/theming.md).
 
 This repo also deploys the Rivers Church store (staging) to `work-docker01` with Kamal,
 behind the shared kamal-proxy and Cloudflare tunnel (`~/dev/riverschurch/infra/infra-01`).
-The `Dockerfile` bakes this theme into the published `ghcr.io/17xande-dev/gostore` release
-(version pinned there) and Kamal pushes the result to `ghcr.io/rivers-church/gostore`;
-Postgres is a Kamal accessory.
+The `Dockerfile` builds gostore from its own repo at the commit pinned there (`GOSTORE_REF`)
+with this theme baked in, and Kamal pushes the result to `ghcr.io/rivers-church/gostore`;
+Postgres is a Kamal accessory. This is the staging store: production will have its own URL
+and R2 buckets.
 
+    make dev                 # local store with this theme: clones gostore into .gostore at the
+                             # pinned commit if needed (also dev-token, dev-logs, dev-down)
     cp .env.example .env     # fill in the secrets (gitignored)
     kamal accessory boot postgres   # once
     make deploy              # clean tree required; kamal deploy
