@@ -1,8 +1,8 @@
 # Kamal deploy of the Rivers Church gostore (staging store) to the work Docker host next to
-# UniFi OS (work-docker01). The image is the Dockerfile here: the published gostore
+# UniFi OS (sdt-vm-docker01). The image is the Dockerfile here: the published gostore
 # release (pinned there) with this theme baked in. Postgres is a Kamal accessory.
 # `make deploy` does it. Host-side setup (kamal-proxy and the shared Cloudflare tunnel) lives in
-# ~/dev/riverschurch/infra/infra-01.
+# ~/dev/riverschurch/infra/sdt-vm-docker01.
 service: gostore
 
 image: rivers-church/gostore
@@ -24,7 +24,7 @@ ssh:
 servers:
   web:
     hosts:
-      - work-docker01
+      - sdt-vm-docker01
 
 # Cloudflare terminates TLS and the shared tunnel forwards the hostname to
 # http://kamal-proxy:80, so kamal-proxy serves plain http and asks for no cert.
@@ -93,7 +93,7 @@ env:
 accessories:
   postgres:
     image: postgres:18.7-alpine
-    host: work-docker01
+    host: sdt-vm-docker01
     env:
       clear:
         POSTGRES_USER: gostore

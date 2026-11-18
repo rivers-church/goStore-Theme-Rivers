@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 KAMAL ?= kamal
-SERVER ?= it_admin@work-docker01
+SERVER ?= it_admin@sdt-vm-docker01
 
 GOSTORE_REPO ?= https://github.com/17xande-dev/gostore.git
 # The gostore release the image is built on, read from the Dockerfile so local dev runs what deploys.
@@ -13,7 +13,7 @@ GOSTORE_MAKE = $(MAKE) -C $(GOSTORE_DIR) COMPOSE="docker compose -f compose.yaml
 
 .PHONY: deploy logs-prod backup gostore dev dev-logs dev-token dev-down
 
-## deploy: build the image (gostore at the pinned release + this theme), push it, and swap it in on work-docker01
+## deploy: build the image (gostore at the pinned release + this theme), push it, and swap it in on sdt-vm-docker01
 # Kamal builds from HEAD, not the working tree, so a dirty tree is refused: the image tag
 # is a commit sha and must name the theme that is inside it. The gostore release is pinned
 # in the Dockerfile.

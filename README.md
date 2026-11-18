@@ -91,8 +91,8 @@ your own. See [Theming](../docs/theming.md).
 
 ## Deploying
 
-This repo also deploys the Rivers Church store (staging) to `work-docker01` with Kamal,
-behind the shared kamal-proxy and Cloudflare tunnel (`~/dev/riverschurch/infra/infra-01`).
+This repo also deploys the Rivers Church store (staging) to `sdt-vm-docker01` with Kamal,
+behind the shared kamal-proxy and Cloudflare tunnel (`~/dev/riverschurch/infra/sdt-vm-docker01`).
 The `Dockerfile` bakes this theme into the published gostore release pinned there (`GOSTORE_VERSION`), and Kamal pushes the result to
 `ghcr.io/rivers-church/gostore`; Postgres is a Kamal accessory. This is the staging store: production will have its own URL
 and R2 buckets.
@@ -104,15 +104,15 @@ then starts it with this theme; also `dev-token`, `dev-logs`, `dev-down`).
 
 - [Kamal](https://kamal-deploy.org) 2.x (`gem install kamal`) and Docker with buildx. The image
   is built on your machine for linux/amd64 and pushed from there.
-- SSH access to `work-docker01` as `it_admin` (your key authorised there, and the host
-  reachable from your network). `ssh it_admin@work-docker01 true` should work.
+- SSH access to `sdt-vm-docker01` as `it_admin` (your key authorised there, and the host
+  reachable from your network). `ssh it_admin@sdt-vm-docker01 true` should work.
 - `gh auth login` as a GitHub user who can push packages to the `rivers-church` organisation;
   `.kamal/secrets` uses `gh auth token` as the registry password, so the token needs the
   `write:packages` scope (`gh auth refresh -s write:packages`).
 - The secrets in `.env`, from `.env.example`. Ask whoever runs the store for the values you
   cannot generate (`GRAPH_*`); `.env` is gitignored and must stay that way.
-- The shared kamal-proxy and Cloudflare tunnel on `work-docker01` are already running (set up
-  once from `~/dev/riverschurch/infra/infra-01`); a new hostname only needs adding to the tunnel.
+- The shared kamal-proxy and Cloudflare tunnel on `sdt-vm-docker01` are already running (set up
+  once from `~/dev/riverschurch/infra/sdt-vm-docker01`); a new hostname only needs adding to the tunnel.
 
     cp .env.example .env     # fill in the secrets (gitignored)
     kamal accessory boot postgres   # once
