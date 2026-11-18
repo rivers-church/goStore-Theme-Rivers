@@ -30,6 +30,12 @@ servers:
 # http://kamal-proxy:80, so kamal-proxy serves plain http and asks for no cert.
 # /healthz also checks the database.
 proxy:
+  run:
+    # Pinned: Kamal defaults to v0.9.2. A running proxy is not swapped by `kamal deploy`;
+    # `kamal proxy reboot` (brief outage) applies a change here. `publish: false` replaces
+    # the old `kamal proxy boot_config set --no-publish`: the tunnel is the only way in.
+    version: v0.10.3
+    publish: false
   ssl: false
   host: stagingstore.rivers.church
   app_port: 8080
