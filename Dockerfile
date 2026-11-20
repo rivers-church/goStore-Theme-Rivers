@@ -4,7 +4,7 @@
 #
 # Bump GOSTORE_VERSION deliberately, and diff the copied theme files against that
 # release first (see README "What is overridden"). `make dev` checks out the same tag.
-ARG GOSTORE_VERSION=v0.5.0
+ARG GOSTORE_VERSION=v0.6.0
 FROM ghcr.io/17xande-dev/gostore:${GOSTORE_VERSION}
 
 COPY templates /theme/templates
